@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{PRODUCT_NAME}} | {{SUBTITLE}}</title>
+  <meta name="application-name" content="{{PRODUCT_NAME}}">
+  <meta name="description" content="{{SUBTITLE}} analytics workspace">
+  <meta property="og:title" content="{{PRODUCT_NAME}}">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <div id="authGate" class="authGate" hidden></div>
+  <div class="app" id="appShell" hidden aria-hidden="true">
+    <aside class="side">
+      <div class="logo">
+        <span class="brandMark">{{MONOGRAM}}</span>
+        <b>{{PRODUCT_NAME}}</b>
+      </div>
+
+      <h5>WORKSPACE</h5>
+      <a class="active" href="#overview" data-page="overview">
+        <span>▦ &nbsp; Overview</span>
+      </a>
+      <a href="#ingestion" data-page="ingestion">
+        <span>⇧ &nbsp; Data ingestion</span>
+      </a>
+
+      <h5 class="navGroup">DATA PREPARATION</h5>
+      <a href="#workflow" data-page="workflow">
+        <span>◷ &nbsp; Analysis workflow</span>
+      </a>
+      <a href="#metrics" data-page="metrics">
+        <span>▤ &nbsp; Metrics &amp; KPIs</span>
+      </a>
+      <a href="#schema" data-page="schema">
+        <span>⌘ &nbsp; Tables &amp; schema</span>
+      </a>
+      <a href="#cleaning" data-page="cleaning">
+        <span>✳ &nbsp; Data cleaning</span>
+      </a>
+      <a href="#quality" data-page="quality">
+        <span>✓ &nbsp; Data quality</span>
+      </a>
+      <a href="#relationships" data-page="relationships">
+        <span>⌗ &nbsp; Relationships</span>
+      </a>
+
+      <h5 class="navGroup">INSIGHTS &amp; REPORTING</h5>
+      <a href="#visualizations" data-page="visualizations">
+        <span>▥ &nbsp; Visualizations</span>
+      </a>
+      <a href="#decisions" data-page="decisions">
+        <span>↗ &nbsp; Decision opportunities</span>
+      </a>
+      <a href="#chat" data-page="chat">
+        <span>✦ &nbsp; Ask your data</span>
+      </a>
+      <a href="#reports" data-page="reports">
+        <span>▧ &nbsp; Reports &amp; docs</span>
+      </a>
+
+      <div class="safe">
+        <strong>◈ &nbsp;Local &amp; private</strong>
+        Local workspace snapshots are saved on this computer. Do not use
+        identifiable patient data in this development build.
+      </div>
+    </aside>
+
+    <main class="main" id="top">
+      <header class="top">
+        <span style="font-size:11px;color:#60747b">
+          {{PRODUCT_NAME}} &nbsp;/&nbsp;
+          <b id="crumb" style="color:var(--ink)">Overview</b>
+        </span>
+
+        <select id="mobileNav" class="mobileNav"
+                aria-label="Choose workspace page">
+          <option value="overview">Overview</option>
+          <option value="ingestion">Data ingestion</option>
+          <option value="workflow">Analysis workflow</option>
+          <option value="metrics">Metrics &amp; KPIs</option>
+          <option value="schema">Tables &amp; schema</option>
+          <option value="cleaning">Data cleaning</option>
+          <option value="quality">Data quality</option>
+          <option value="relationships">Relationships</option>
+          <option value="visualizations">Visualizations</option>
+          <option value="decisions">Decision opportunities</option>
+          <option value="chat">Ask your data</option>
+          <option value="reports">Reports &amp; docs</option>
+        </select>
+
+        <div class="topActions">
+          <span class="local" id="liveState">
+            <i></i> LOCAL WORKSPACE
+          </span>
+          <button id="refresh" class="refreshBtn"
+                  title="Refresh the connected SQLite snapshot" hidden>
+            ↻ Refresh source
+          </button>
+          <button id="autoRefresh" class="refreshBtn"
+                  aria-pressed="false" hidden>
+            Auto refresh · Off
+          </button>
+        </div>
+      </header>
+
+      <div class="page">
+        <div class="head" id="pageHead">
+          <div>
+            <div class="eyebrow">HEALTHCARE DATA INTELLIGENCE</div>
+            <h1 id="pageTitle">{{PRODUCT_NAME}} analytics workspace</h1>
+            <p id="pageDesc">
+              Understand, improve, and explore your healthcare datasets.
+            </p>
+          </div>
+          <button id="report" disabled>↓ &nbsp;Download report</button>
+        </div>
+
+        <div class="layout">
+          <section class="card" id="upload">
+            <div class="ctop">
+              <div>
+                <h2>Connect healthcare data</h2>
+                <p>Upload related files or inspect a local SQLite database.</p>
+              </div>
+              <div class="tabs">
+                <button class="tab active" data-tab="files">Files</button>
+                <button class="tab" data-tab="sqlite">SQLite</button>
+              </div>
+            </div>
+
+            <div class="body">
+              <div class="pane show" id="pane-files">
+                <div class="drop" id="drop">
+                  <strong>Drop files here</strong>
+                  <p>or select files with the file control below</p>
+
+                  <input id="files" class="filePicker" type="file" multiple
+                         accept=".csv,.tsv,.json,.jsonl,.ndjson,.xml,.xlsx,.xls,.xlsb,.parquet,.zip"
+                         aria-label="Select healthcare data files">
+
+                  <div class="format" style="margin-top:10px">
+                    CSV · TSV · JSON / JSONL · XML · Excel · Parquet* · ZIP
+                  </div>
+                </div>
+
+                <div class="help">
+                  File parsing happens on this computer. Optional formats
+                  depend on installed readers. Check the capability list
+                  below before upload. Per-file limit is configured at
+                  server startup.
+                </div>
+
+                <div id="formatMatrix" class="formatMatrix"
+                     aria-live="polite">
+                  Loading format capabilities…
+                </div>
+
+                <div id="fileNames"></div>
+
+                <div id="uploadStatus" class="uploadStatus" role="status">
+                  No dataset loaded. Select one or more files to start.
+                </div>
+              </div>
+
+              <div class="pane" id="pane-sqlite">
+                <div class="field">
+                  <label>Local SQLite database file path</label>
+                  <input id="dbpath" placeholder="C:\data\hospital.db">
+                </div>
+
+                <div class="row" style="margin-top:10px">
+                  <button class="primary" id="connect">
+                    Read tables (read-only)
+                  </button>
+                </div>
+
+                <div class="help">
+                  The app opens SQLite in read-only mode. Other database
+                  systems need a configured connector and secure credential
+                  handling.
+                </div>
+              </div>
+
+              <div class="goal">
+                <label>Analysis question / business goal</label>
+                <select id="goal">
+                  <option>Hospital operations and patient flow</option>
+                  <option>Revenue, billing and insurance</option>
+                  <option>Care quality and outcomes</option>
+                  <option>Staffing and capacity planning</option>
+                  <option>Data quality assessment</option>
+                </select>
+              </div>
+
+              <div class="spinner" id="busy">
+                Reading records and profiling columns…
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="ctop">
+              <div>
+                <h2>Analysis workflow</h2>
+                <p id="status">Waiting for your dataset</p>
+              </div>
+              <span class="local" id="stage">READY</span>
+            </div>
+
+            <div class="body" id="steps">
+              <div class="issue">
+                <i class="dot" style="background:#53b49a"></i>
+                <div>
+                  <b>1. Read and profile</b>
+                  <small>Inspect tables, columns, record counts, types, missingness</small>
+                </div>
+              </div>
+
+              <div class="issue">
+                <i class="dot"></i>
+                <div>
+                  <b>2. Confirm your goal</b>
+                  <small>Focus analysis on your operational question</small>
+                </div>
+              </div>
+
+              <div class="issue">
+                <i class="dot"></i>
+                <div>
+                  <b>3. Review cleaning plan</b>
+                  <small>Preview changes; approve before applying</small>
+                </div>
+              </div>
+
+              <div class="issue">
+                <i class="dot"></i>
+                <div>
+                  <b>4. Explore and document</b>
+                  <small>Visualize findings and export a report</small>
+                </div>
+              </div>
+
+              <div class="foot">
+                Descriptive analysis only. Validate data definitions and
+                decisions with qualified teams.
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="stats" id="stats">
+          <div class="stat">
+            <span>Tables</span><b>—</b><small>Loaded tables</small>
+          </div>
+          <div class="stat">
+            <span>Records</span><b>—</b><small>Total rows</small>
+          </div>
+          <div class="stat">
+            <span>Fields</span><b>—</b><small>Across tables</small>
+          </div>
+          <div class="stat">
+            <span>Patient fields</span><b>—</b><small>Identifiers masked</small>
+          </div>
+          <div class="stat">
+            <span>Quality flags</span><b>—</b><small>Review required</small>
+          </div>
+          <div class="stat">
+            <span>Relationships</span><b>—</b><small>Key candidates</small>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="ctop sectionHeading">
+            <div>
+              <h2>Detected tables &amp; healthcare schema</h2>
+              <p>Column types, missingness and inferred healthcare domains</p>
+            </div>
+          </div>
+          <div class="tablelist" id="tables">
+            <div class="card empty">
+              Upload files or connect a database to see a real schema profile.
+            </div>
+          </div>
+        </div>
+
+        <div class="split section">
+          <section class="card" id="quality">
+            <div class="ctop">
+              <div>
+                <h2>Data quality findings</h2>
+                <p>Missingness, duplicates, and statistical outlier candidates</p>
+              </div>
+              <button id="clean" disabled>Review cleaning plan</button>
+            </div>
+            <div class="body" id="issues">
+              <div class="empty">
+                Findings appear after loading data. No changes are applied automatically.
+              </div>
+            </div>
+          </section>
+
+          <section class="card" id="model">
+            <div class="ctop">
+              <div>
+                <h2>Table relationships</h2>
+                <p>Matching key candidates to confirm</p>
+              </div>
+            </div>
+            <div class="body" id="relations">
+              <div class="empty">
+                Key candidates will appear after profiling related tables.
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="split section" id="insights">
+          <section class="card">
+            <div class="ctop">
+              <div>
+                <h2>Dataset visualization</h2>
+                <p id="chartTitle">
+                  A time trend is generated when date fields are detected
+                </p>
+              </div>
+            </div>
+            <div class="body" id="chart">
+              <div class="empty">
+                Upload data to create a visualization from its contents.
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="ctop">
+              <div>
+                <h2>Decision opportunities</h2>
+                <p>Field-informed questions for your team to validate</p>
+              </div>
+            </div>
+            <div class="body" id="recommendations">
+              <div class="empty">
+                Recommendations will reflect detected data domains.
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="foot" style="margin-top:18px">
+          LOCAL DEVELOPMENT INSTANCE. Workspace snapshots and recent job
+          status persist in local files on this computer. This build has no
+          user authentication, organisation isolation, durable transformation
+          audit trail, or PHI security review. Do not expose it to a network
+          or use identifiable patient data.
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="box">
+      <h2 id="mtitle"></h2>
+      <div id="mbody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/static/js/auth.js" defer></script>
+  <script src="/static/js/app.js" defer></script>
+</body>
+</html>

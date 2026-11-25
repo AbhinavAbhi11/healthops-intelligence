@@ -1,0 +1,79 @@
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local datasets and persistence
+instance/
+data/
+uploads/
+output/
+reports/
+*.sqlite
+*.sqlite3
+*.db
+
+# Backups and generated archives
+*.bak
+*.log
+*.zip
+healthops_source_review.zip
+
+# Build and OS files
+.DS_Store
+Thumbs.db
+dist/
+build/
+.next/
+node_modules/
+coverage/
+# HealthOps local secrets, environments and generated state
+.env
+.env.*
+!.env.example
+!.env.*.example
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+*.bak
+*.sqlite
+*.sqlite3
+*.db
+.backups/
+instance/
+data/
+datasets/
+uploads/
+exports/
+*.pem
+*.key
+*.p12
+*.pfx
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local persistence test dataset
+/healthops_persistence_test.csv
